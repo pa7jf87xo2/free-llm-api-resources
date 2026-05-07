@@ -24,6 +24,9 @@ REPO_ROOT = Path(__file__).parent.parent
 TEMPLATE_PATH = Path(__file__).parent / "README_template.md"
 OUTPUT_PATH = REPO_ROOT / "README.md"
 
+# Show up to this many models before truncating with "+N more"
+MAX_MODELS_DISPLAYED = 3
+
 
 def format_rate_limit(provider: Provider) -> str:
     """Format rate limit information for a provider."""
@@ -49,8 +52,8 @@ def format_models(provider: Provider) -> str:
         free_models = provider.models
 
     model_names = [m.name for m in free_models]
-    if len(model_names) > 5:
-        return ", ".join(model_names[:5]) + f" (+{len(model_names) - 5} more)"
+    if len(model_names) > MAX_MODELS_DISPLAYED:
+        return ", ".join(model_names[:MAX_MODELS_DISPLAYED]) + f" (+{len(model_names) - MAX_MODELS_DISPLAYED} more)"
     return ", ".join(model_names)
 
 
@@ -88,33 +91,4 @@ def generate_readme() -> str:
     now = datetime.now(timezone.utc)
     timestamp = now.strftime("%Y-%m-%d %H:%M UTC")
 
-    # Replace template placeholders
-    content = template.replace("{{PROVIDER_TABLE}}", provider_table)
-    content = content.replace("{{PROVIDER_COUNT}}", str(len(active_providers)))
-    content = content.replace("{{LAST_UPDATED}}", timestamp)
-
-    return content
-
-
-def main() -> int:
-    """Main entry point for README generation."""
-    try:
-        print(f"Reading template from: {TEMPLATE_PATH}")
-        readme_content = generate_readme()
-
-        print(f"Writing README to: {OUTPUT_PATH}")
-        OUTPUT_PATH.write_text(readme_content, encoding="utf-8")
-
-        print(f"Successfully generated README.md with {len(PROVIDERS)} providers.")
-        return 0
-
-    except FileNotFoundError as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
-    except Exception as e:
-        print(f"Unexpected error: {e}", file=sys.stderr)
-        return 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    # Replace template pla

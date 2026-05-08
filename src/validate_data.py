@@ -11,7 +11,7 @@ from data import PROVIDERS, Provider, RateLimit, Model
 
 
 REQUIRED_PROVIDER_FIELDS = ["name", "url", "free_tier"]
-VALID_RATE_LIMIT_PERIODS = ["minute", "hour", "day", "month"]
+VALID_RATE_LIMIT_PERIODS = ["minute", "hour", "day", "week", "month"]
 
 
 def validate_url(url: str) -> bool:
@@ -89,38 +89,4 @@ def validate_all_providers(providers: list[Provider]) -> list[str]:
         all_errors.append("PROVIDERS list is empty")
         return all_errors
 
-    seen_names = {}
-    for i, provider in enumerate(providers):
-        errors = validate_provider(provider)
-        all_errors.extend(errors)
-
-        # Check for duplicate provider names
-        name_key = provider.name.strip().lower() if provider.name else f"__unnamed_{i}"
-        if name_key in seen_names:
-            all_errors.append(
-                f"Duplicate provider name detected: '{provider.name}' "
-                f"(indices {seen_names[name_key]} and {i})"
-            )
-        else:
-            seen_names[name_key] = i
-
-    return all_errors
-
-
-def main() -> int:
-    """Run validation and print results. Returns exit code."""
-    print(f"Validating {len(PROVIDERS)} provider(s)...")
-    errors = validate_all_providers(PROVIDERS)
-
-    if errors:
-        print(f"\n❌ Validation failed with {len(errors)} error(s):")
-        for error in errors:
-            print(f"  - {error}")
-        return 1
-
-    print(f"✅ All {len(PROVIDERS)} provider(s) passed validation.")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+    seen_nam
